@@ -1,4 +1,4 @@
-;;;; package.lisp
+;;;; package-basic.lisp
 
 (defpackage #:rshell.client.curses.basic
   (:use #:cl)

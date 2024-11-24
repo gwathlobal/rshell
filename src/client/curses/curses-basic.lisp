@@ -1,4 +1,4 @@
-;;;; curses-main.lisp
+;;;; curses-basic.lisp
 
 (in-package #:rshell.client.curses.basic)
 

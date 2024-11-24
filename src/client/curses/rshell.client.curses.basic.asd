@@ -7,5 +7,5 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:croatoan)
-  :components ((:file "package")
+  :components ((:file "package-basic")
                (:file "curses-basic")))
