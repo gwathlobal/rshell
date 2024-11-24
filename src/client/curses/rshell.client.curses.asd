@@ -6,6 +6,6 @@
   :license  "GPLv3"
   :version "0.0.1"
   :serial t
-  :depends-on (#:croatoan #:rshell.client.curses.basic)
+  :depends-on (#:croatoan #:rshell.client.curses.basic #:rshell.server.api)
   :components ((:file "package")
                (:file "client")))
