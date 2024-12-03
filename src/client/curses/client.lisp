@@ -2,39 +2,39 @@
 
 (in-package #:rshell.client.curses)
 
-(defun refresh-screen (scr)
-  (let* ((data (rshell.server.api:get-data-for-client))
-         (player-x (getf (getf data :player) :x))
-         (player-y (getf (getf data :player) :y)))
-    (croatoan:clear scr)
-    (croatoan:move scr 23 0)
-    (format scr "Arrows for movement. Type q to quit.~%~%")
-  
-    (croatoan:move scr player-y player-x)
-    (format scr "@")))
-
-(defun croatoan-bindings ()
+(defun rshell.client.api:process-main-menu ()
   (let ((scr rshell.client.curses.basic::*scr*))
-    (croatoan:submit (refresh-screen scr))
+    (croatoan:clear scr)
+    (croatoan:move scr 1 0)
+    (format scr "Rogue Shell~%Main Menu~%n - New Game~%q - Quit")
     
-    (croatoan:submit (croatoan:bind scr #\q #'croatoan:exit-event-loop))
+    (croatoan:event-case (scr event)
+      (#\n (return-from croatoan:event-case :new-game))
+      (#\q (return-from croatoan:event-case :quit-game)))))
+
+(defun rshell.client.api:process-game-loop ()
+  (let ((scr rshell.client.curses.basic::*scr*)
+        (player-x (rshell.server::mob-x rshell.server::*player*))
+        (player-y (rshell.server::mob-y rshell.server::*player*)))
+
+    (refresh-screen scr player-x player-y)
     
-    (croatoan:submit (croatoan:bind scr :up #'(lambda (win event)
-                                                (declare (ignore event)) 
-                                                (rshell.server.api:player-move 0 -1)
-                                                (refresh-screen win))))
+    (croatoan:event-case (scr event)
+      (:up (return-from croatoan:event-case :player-move-up))
+      (:down (return-from croatoan:event-case :player-move-down))
+      (:left (return-from croatoan:event-case :player-move-left))
+      (:right (return-from croatoan:event-case :player-move-right))
+      (#\q (return-from croatoan:event-case :quit-game)))))
+
+(defun rshell.client.api:process-game-quit ()
+  (let ((scr rshell.client.curses.basic::*scr*))
+    (croatoan:clear scr)
+    (croatoan:move scr 0 0)))
     
-    (croatoan:submit (croatoan:bind scr :down #'(lambda (win event) 
-                                                  (declare (ignore event))
-                                                  (rshell.server.api:player-move 0 1) 
-                                                  (refresh-screen win))))
-    
-    (croatoan:submit (croatoan:bind scr :left #'(lambda (win event) 
-                                                  (declare (ignore event)) 
-                                                  (rshell.server.api:player-move -1 0) 
-                                                  (refresh-screen win))))
-    
-    (croatoan:submit (croatoan:bind scr :right #'(lambda (win event) 
-                                                   (declare (ignore event)) 
-                                                   (rshell.server.api:player-move 1 0) 
-                                                   (refresh-screen win))))))
+(defun refresh-screen (scr player-x player-y)
+  (croatoan:clear scr)
+  (croatoan:move scr 23 0)
+  (format scr "Arrows for movement. Type q to quit.~%~%")
+  
+  (croatoan:move scr player-y player-x)
+  (format scr "@"))

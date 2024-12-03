@@ -4,13 +4,13 @@
 
 (defun run-from-repl ()
   (rshell.server::init-game)
-  
-  (rshell.client.curses:croatoan-bindings))
+  (croatoan:submit (rshell.server::process-server-state)))
 
 (defun run-from-lisp ()
   (rshell.server::init-game)
   
-  (rshell.client.curses.basic:curses-main-loop #'rshell.client.curses:croatoan-bindings))
+  (rshell.client.curses.basic:curses-main-loop #'rshell.server::init-game  
+                                               #'rshell.server::process-server-state))
 
 #+(and sbcl unix)
 (defun make-exec ()

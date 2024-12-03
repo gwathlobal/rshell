@@ -6,7 +6,7 @@
 
 ;; Main entry point, to be called from the terminal thread, it will
 ;; initialize the screen and enter the event loop
-(defun curses-main-loop (&optional (binding-func nil))
+(defun curses-main-loop (&optional init-server-func process-server-func)
   (croatoan:with-screen (scr
                          ;; Set input blocking to 100 ms. This _must_
                          ;; be set for swank to work, otherwise
@@ -20,8 +20,12 @@
                          :input-echoing nil
                          :enable-colors t
                          :cursor-visible nil)
-    ;; Set *scr* to the initilized scr so that we can access it form
+    ;; Set *scr* to the initialized scr so that we can access it form
     ;; the swank/micros thread and then enter the event-loop.
-    (when binding-func
-      (funcall binding-func))
-    (croatoan:run-event-loop (setf *scr* scr))))
+    (setf *scr* scr)
+    (if (and (not (null init-server-func))
+             (not (null process-server-func)))
+        (progn
+          (funcall init-server-func)
+          (funcall process-server-func))
+        (croatoan:run-event-loop *scr*))))
