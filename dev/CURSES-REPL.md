@@ -8,6 +8,6 @@ So, to enable REPL development with curses, you need to do the following:
 
 * Run Lem, press M-x, type **slime-connect**. This will connect to SLIME to the SBCL from the previous step.
 
-* Inside Lem's REPL, type **(ql:quickload :rshell)**, and then **(rshell:run-from-repl)**. This will load the game into SBCL, and start the game in the curses window.
+* Inside Lem's REPL, type **(ql:quickload :rshell-curses)**, and then **(rshell-curses:run-from-repl)**. This will load the game into SBCL, and start the game in the curses window.
 
 * Switch to the curses terminal window and you will see the game screen there. You can play the game inside that window and at the same time see that the REPL inside Lem is not blocked, so you are able to inspect the game's inner workings while playing.
