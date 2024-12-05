@@ -5,8 +5,6 @@
 (defparameter *player* nil)
 
 (defun init-game ()
-  (setf *player* (make-instance 'mob))
-  
   (setf *server-state* :server-state-main-menu))
 
 (defparameter *server-state* :server-state-main-menu
@@ -20,7 +18,9 @@
   (loop with cmd = nil
         do
            (case cmd
-             (:new-game (setf *server-state* :server-state-game-loop))
+             (:new-game (progn
+                          (start-new-game)
+                          (setf *server-state* :server-state-game-loop)))
              (:quit-game (setf *server-state* :server-state-game-quit)))
         
            (setf cmd (case *server-state*
@@ -38,3 +38,10 @@
                        (:server-state-game-quit (progn 
                                                   (rshell.client.api:process-game-quit)
                                                   (return-from process-server-state)))))))
+
+(defun start-new-game ()
+  (setf *player* (make-instance 'mob))
+  (setf *world* (make-instance 'world :cur-level (make-instance 'level)))
+  (setf (mob-level *player*) (world-cur-level *world*))
+  
+  (generate-random-level (world-cur-level *world*)))

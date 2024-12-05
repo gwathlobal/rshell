@@ -8,5 +8,6 @@
   :serial t
   :depends-on (#:rshell.client.api)
   :components ((:file "package")
+               (:file "level")
                (:file "mob")
                (:file "rshell")))
