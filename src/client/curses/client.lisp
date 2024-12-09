@@ -13,12 +13,15 @@
       (#\q (return-from croatoan:event-case :quit-game)))))
 
 (defun rshell.client.api:process-game-loop ()
-  (let ((scr rshell.client.curses.basic::*scr*)
-        (player-x (rshell.server::mob-x rshell.server::*player*))
-        (player-y (rshell.server::mob-y rshell.server::*player*))
-        (terrain (rshell.server::level-terrain (rshell.server::world-cur-level rshell.server::*world*))))
+  (let* ((scr rshell.client.curses.basic::*scr*)
+         (player rshell.server::*player*)
+         (player-x (rshell.server::mob-x player))
+         (player-y (rshell.server::mob-y player))
+         (level (rshell.server::world-cur-level rshell.server::*world*))
+         (terrain (rshell.server::level-terrain level))
+         (mob-grid (rshell.server::level-mob-grid level)))
 
-    (refresh-screen scr player-x player-y terrain)
+    (refresh-screen scr player-x player-y terrain mob-grid)
     
     (croatoan:event-case (scr event)
       (:up (return-from croatoan:event-case :player-move-up))
@@ -32,7 +35,7 @@
     (croatoan:clear scr)
     (croatoan:move scr 0 0)))
     
-(defun refresh-screen (scr player-x player-y terrain)
+(defun refresh-screen (scr player-x player-y terrain mob-grid)
   (croatoan:clear scr)
 
   (let* ((level-max-x (array-dimension terrain 0))
@@ -77,9 +80,9 @@
                                           (:terrain-type-test-floor #\.)
                                           (:terrain-type-test-bush #\#)))
 
-                      (when (and (= player-x x)
-                                 (= player-y y))
+                      (when (not (null (aref mob-grid x y)))
                         (setf cur-terrain #\@))
+                      
                       (croatoan:move scr scr-y scr-x)
                       (format scr "~A" cur-terrain))))
   

@@ -10,4 +10,5 @@
   :components ((:file "package")
                (:file "level")
                (:file "mob")
+               (:file "mob-level-funcs")
                (:file "rshell")))
