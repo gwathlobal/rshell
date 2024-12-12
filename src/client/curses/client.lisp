@@ -81,7 +81,10 @@
                                           (:terrain-type-test-bush #\#)))
 
                       (when (not (null (aref mob-grid x y)))
-                        (setf cur-terrain #\@))
+                        (let* ((mob (rshell.server::get-mob-by-id (aref mob-grid x y)))
+                               (mob-rep (get-mob-representation (rshell.server::mob-type-id mob)))
+                               (glyph (rep-glyph mob-rep)))
+                          (setf cur-terrain glyph)))
                       
                       (croatoan:move scr scr-y scr-x)
                       (format scr "~A" cur-terrain))))

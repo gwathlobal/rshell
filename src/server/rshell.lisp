@@ -40,7 +40,9 @@
                                                   (return-from process-server-state)))))))
 
 (defun start-new-game ()
-  (setf *player* (make-instance 'mob :mob-type :mob-type-player))
+  (adjust-array *mobs* 0)
+  
+  (setf *player* (make-instance 'mob :mob-type +mob-type-player+))
   (setf *world* (make-instance 'world :cur-level (make-instance 'level)))
   
   (add-mob-to-level *player* (world-cur-level *world*))

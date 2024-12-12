@@ -8,4 +8,5 @@
   :serial t
   :depends-on (#:croatoan #:rshell.client.api #:rshell.client.curses.basic #:rshell.server.api)
   :components ((:file "package")
+               (:file "glyph")
                (:file "client")))
