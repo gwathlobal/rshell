@@ -8,6 +8,7 @@
   :serial t
   :depends-on (#:rshell.client.api)
   :components ((:file "package")
+               (:file "terrain")
                (:file "level")
                (:file "mob")
                (:file "mob-level-funcs")

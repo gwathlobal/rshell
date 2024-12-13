@@ -1,4 +1,4 @@
 ;;;; package.lisp
 
 (defpackage #:rshell.server
-  (:use #:cl))
+  (:use #:cl #:rshell.common))

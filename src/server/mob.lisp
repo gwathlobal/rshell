@@ -12,7 +12,7 @@
   ((id :initarg :id :reader mob-type-id :type fixnum)))
 
 (defclass mob ()
-  ((id :initform (find-free-id *mobs*) :reader id :type fixnum)
+  ((id :reader id :type fixnum)
    (mob-type :initarg :mob-type :accessor mob-type-id :type fixnum)
    (level :initform nil :initarg :level :accessor mob-level :type (or level null))
    (x :initform 0 :initarg :x :accessor mob-x :type fixnum)
@@ -20,23 +20,15 @@
 
 (defmethod initialize-instance :after ((mob mob) &key)
   (with-slots (id) mob
+    (setf id (find-free-id *mobs*))
     (setf (aref *mobs* id) mob)))
-
-(defun find-free-id (entity-container-array)
-  (loop for i from 0 below (length entity-container-array)
-        unless (aref entity-container-array i)
-        do (return-from find-free-id i))
-  (adjust-array entity-container-array (list (1+ (length entity-container-array))))
-  (1- (length entity-container-array)))
 
 (defun get-mob-by-id (mob-id)
   (aref *mobs* mob-id))
 
+(defmethod initialize-instance :after ((mob-type mob-type) &key)
+  (with-slots (id) mob-type
+    (let ((container *mob-types*))
+      (set-and-adjust-container id mob-type container))))
 
-
-(defun add-mob-type (mob-type)
-  (when (>= (mob-type-id mob-type) (1- (length *mob-types*)))
-    (adjust-array *mob-types* (list (1+ (length *mob-types*)))))
-  (aref *mob-types* (mob-type-id mob-type)))
-
-(add-mob-type (make-instance 'mob-type :id +mob-type-player+))
+(make-instance 'mob-type :id +mob-type-player+)

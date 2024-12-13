@@ -17,8 +17,8 @@
 (defmethod initialize-instance :after ((level level) &key)
   (with-slots (max-x max-y terrain mob-grid) level
     (setf terrain (make-array (list max-x max-y) 
-                              :element-type 'keyword
-                              :initial-element :terrain-type-test-floor))
+                              :element-type 'fixnum
+                              :initial-element +terrain-type-test-floor+))
     (setf mob-grid (make-array (list max-x max-y) 
                                :element-type '(or null fixnum)
                                :initial-element nil))))
@@ -30,7 +30,7 @@
              (loop for y from 0 below (array-dimension terrain 1) 
                    do
                       (when (< (random 100) 30)
-                        (setf (aref terrain x y) :terrain-type-test-bush))))))
+                        (setf (aref terrain x y) +terrain-type-test-wall+))))))
 
 (defun level-get-mob-id-at (level x y)
   (with-slots (mob-grid) level

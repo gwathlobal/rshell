@@ -3,19 +3,52 @@
 (in-package #:rshell.client.curses)
 
 (defparameter *mob-representations* (make-array 0 :element-type 'representation :adjustable t))
+(defparameter *terrain-representations* (make-array 0 :element-type 'representation :adjustable t))
 
-(defclass mob-representation ()
-  ((mob-type :initarg :mob-type :reader rep-mob-type :type fixnum)
+(defclass representation ()
+  ((type-group :initarg :group :reader rep-type-group :type keyword 
+               :documentation 
+               "Available values:
+                   :terrain
+                   :mob")
+   (type-id :initarg :type-id :reader rep-type-id :type fixnum)
    (glyph :initarg :glyph :reader rep-glyph :type character)))
 
-(defun add-mob-representation (mob-representation)
-  (when (>= (rep-mob-type mob-representation) (1- (length *mob-representations*)))
-    (adjust-array *mob-representations* (list (1+ (length *mob-representations*)))))
-  (setf (aref *mob-representations* (rep-mob-type mob-representation)) mob-representation))
+(defun get-representation-container (type-group)
+  (ccase type-group
+    (:terrain *terrain-representations*)
+    (:mob *mob-representations*)))
 
-(defun get-mob-representation (mob-type-id)
-  (aref *mob-representations* mob-type-id))
+(defmethod initialize-instance :after ((representation representation) &key)
+  (with-slots (type-group type-id) representation
+    (let ((container (get-representation-container type-group)))
+      (set-and-adjust-container type-id representation container))))
 
-(add-mob-representation (make-instance 'mob-representation 
-                                       :mob-type rshell.server::+mob-type-player+
-                                       :glyph #\@))
+(defun get-representation (rep-type-id rep-type-group)
+  (let ((container (get-representation-container rep-type-group)))
+    (aref container rep-type-id)))
+
+
+;;---------------------------
+;;  TERRAIN
+;;---------------------------
+
+(make-instance 'representation
+               :group :terrain
+               :type-id rshell.server::+terrain-type-test-floor+
+               :glyph #\.)
+
+(make-instance 'representation
+               :group :terrain
+               :type-id rshell.server::+terrain-type-test-wall+
+               :glyph #\#)
+
+;;---------------------------
+;;  MOB
+;;---------------------------
+
+(make-instance 'representation
+               :group :mob
+               :type-id rshell.server::+mob-type-player+
+               :glyph #\@)
+

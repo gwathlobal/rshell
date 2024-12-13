@@ -70,24 +70,29 @@
                          (setf min-y (first (second result)))
                          (setf max-y (second (second result)))))
           
-    (loop with cur-terrain = nil
+    (loop with cur-glyph = nil
           for scr-x from 0 below win-width
           for x from min-x to max-x do
              (loop for scr-y from 0 below win-height 
                    for y from min-y to max-y
                    do
-                      (setf cur-terrain (case (aref terrain x y)
-                                          (:terrain-type-test-floor #\.)
-                                          (:terrain-type-test-bush #\#)))
-
+                      (let* ((terrain-type-id (aref terrain x y))
+                             (glyph (get-glyph terrain-type-id :terrain)))
+                        (setf cur-glyph glyph))
+                      
                       (when (not (null (aref mob-grid x y)))
                         (let* ((mob (rshell.server::get-mob-by-id (aref mob-grid x y)))
-                               (mob-rep (get-mob-representation (rshell.server::mob-type-id mob)))
-                               (glyph (rep-glyph mob-rep)))
-                          (setf cur-terrain glyph)))
+                               (mob-type-id (rshell.server::mob-type-id mob))
+                               (glyph (get-glyph mob-type-id :mob)))
+                          (setf cur-glyph glyph)))
                       
                       (croatoan:move scr scr-y scr-x)
-                      (format scr "~A" cur-terrain))))
+                      (format scr "~A" cur-glyph))))
   
   (croatoan:move scr 24 0)
   (format scr "Arrows for movement. Type q to quit.~%~%"))
+
+(defun get-glyph (id rep-type-group)
+  (let* ((rep (get-representation id rep-type-group))
+         (glyph (rep-glyph rep)))
+    glyph))
