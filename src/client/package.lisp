@@ -3,6 +3,7 @@
 (defpackage #:rshell.client.api
   (:use #:cl)
 
-  (:export :process-main-menu
+  (:export :refresh-screen
+           :process-main-menu
            :process-game-loop
            :process-game-quit))

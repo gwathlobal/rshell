@@ -13,6 +13,23 @@
       (#\q (return-from croatoan:event-case :quit-game)))))
 
 (defun rshell.client.api:process-game-loop ()
+  (let* ((scr rshell.client.curses.basic::*scr*))
+         
+    (rshell.client.api:refresh-screen)
+    
+    (croatoan:event-case (scr event)
+      (:up (return-from croatoan:event-case :player-move-up))
+      (:down (return-from croatoan:event-case :player-move-down))
+      (:left (return-from croatoan:event-case :player-move-left))
+      (:right (return-from croatoan:event-case :player-move-right))
+      (#\q (return-from croatoan:event-case :quit-current-game)))))
+
+(defun rshell.client.api:process-game-quit ()
+  (let ((scr rshell.client.curses.basic::*scr*))
+    (croatoan:clear scr)
+    (croatoan:move scr 0 0)))
+
+(defun rshell.client.api:refresh-screen ()
   (let* ((scr rshell.client.curses.basic::*scr*)
          (player rshell.server::*player*)
          (player-x (rshell.server::mob-x player))
@@ -21,20 +38,8 @@
          (terrain (rshell.server::level-terrain level))
          (mob-grid (rshell.server::level-mob-grid level)))
 
-    (refresh-screen scr player-x player-y terrain mob-grid)
-    
-    (croatoan:event-case (scr event)
-      (:up (return-from croatoan:event-case :player-move-up))
-      (:down (return-from croatoan:event-case :player-move-down))
-      (:left (return-from croatoan:event-case :player-move-left))
-      (:right (return-from croatoan:event-case :player-move-right))
-      (#\q (return-from croatoan:event-case :quit-game)))))
+    (refresh-screen scr player-x player-y terrain mob-grid)))
 
-(defun rshell.client.api:process-game-quit ()
-  (let ((scr rshell.client.curses.basic::*scr*))
-    (croatoan:clear scr)
-    (croatoan:move scr 0 0)))
-    
 (defun refresh-screen (scr player-x player-y terrain mob-grid)
   (croatoan:clear scr)
 

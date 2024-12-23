@@ -5,6 +5,7 @@
 (defparameter *mobs* (make-array 0 :element-type 'mob :adjustable t))
 
 (defconstant +mob-type-player+ 0)
+(defconstant +mob-type-test-enemy+ 1)
 
 (defparameter *mob-types* (make-array 0 :element-type 'mob-type :adjustable t))
 
@@ -12,7 +13,7 @@
   ((id :initarg :id :reader mob-type-id :type fixnum)))
 
 (defclass mob ()
-  ((id :reader id :type fixnum)
+  ((id :reader mob-id :type fixnum)
    (mob-type :initarg :mob-type :accessor mob-type-id :type fixnum)
    (level :initform nil :initarg :level :accessor mob-level :type (or level null))
    (x :initform 0 :initarg :x :accessor mob-x :type fixnum)
@@ -32,3 +33,4 @@
       (set-and-adjust-container id mob-type container))))
 
 (make-instance 'mob-type :id +mob-type-player+)
+(make-instance 'mob-type :id +mob-type-test-enemy+)

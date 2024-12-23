@@ -52,3 +52,7 @@
                :type-id rshell.server::+mob-type-player+
                :glyph #\@)
 
+(make-instance 'representation
+               :group :mob
+               :type-id rshell.server::+mob-type-test-enemy+
+               :glyph #\x)
