@@ -12,7 +12,9 @@
                    :terrain
                    :mob")
    (type-id :initarg :type-id :reader rep-type-id :type fixnum)
-   (glyph :initarg :glyph :reader rep-glyph :type character)))
+   (glyph :initarg :glyph :reader rep-glyph :type character)
+   (color :initarg :color :initform '(:white :black) :reader rep-color :type list)
+   (attr :initarg :attr :initform () :reader rep-attr :type list)))
 
 (defun get-representation-container (type-group)
   (ccase type-group
@@ -36,12 +38,15 @@
 (make-instance 'representation
                :group :terrain
                :type-id rshell.server::+terrain-type-test-floor+
-               :glyph #\.)
+               :glyph #\.
+               :color '(:white :black)
+               :attr '(:dim))
 
 (make-instance 'representation
                :group :terrain
                :type-id rshell.server::+terrain-type-test-wall+
-               :glyph #\#)
+               :glyph #\#
+               :color '(:white :black))
 
 ;;---------------------------
 ;;  MOB
@@ -50,9 +55,11 @@
 (make-instance 'representation
                :group :mob
                :type-id rshell.server::+mob-type-player+
-               :glyph #\@)
+               :glyph #\@
+               :attr '(:bold))
 
 (make-instance 'representation
                :group :mob
                :type-id rshell.server::+mob-type-test-enemy+
-               :glyph #\x)
+               :glyph #\x
+               :color '(:red :black))

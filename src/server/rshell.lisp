@@ -35,7 +35,9 @@
         do
            (rshell.client.api:refresh-screen)
            (if (eq mob *player*)
-               (ai-player *player*)
+               (let ((result (ai-player *player*)))
+                 (case result
+                   ((:quit-current-game) (return result))))
                (ai-mob mob))))
 
 (defun process-server-state ()

@@ -76,22 +76,34 @@
                          (setf max-y (second (second result)))))
           
     (loop with cur-glyph = nil
+          with cur-color = '(:white :black)
+          with cur-attr = ()
           for scr-x from 0 below win-width
           for x from min-x to max-x do
              (loop for scr-y from 0 below win-height 
                    for y from min-y to max-y
                    do
                       (let* ((terrain-type-id (aref terrain x y))
-                             (glyph (get-glyph terrain-type-id :terrain)))
-                        (setf cur-glyph glyph))
-                      
+                             (glyph (get-glyph terrain-type-id :terrain))
+                             (color (get-color terrain-type-id :terrain))
+                             (attr (get-attr terrain-type-id :terrain)))
+                        (setf cur-glyph glyph 
+                              cur-color color
+                              cur-attr attr))
+                   
                       (when (not (null (aref mob-grid x y)))
                         (let* ((mob (rshell.server::get-mob-by-id (aref mob-grid x y)))
                                (mob-type-id (rshell.server::mob-type-id mob))
-                               (glyph (get-glyph mob-type-id :mob)))
-                          (setf cur-glyph glyph)))
-                      
+                               (glyph (get-glyph mob-type-id :mob))
+                               (color (get-color mob-type-id :mob))
+                               (attr (get-attr mob-type-id :mob)))
+                          (setf cur-glyph glyph 
+                                cur-color color
+                                cur-attr attr)))
+                                
                       (croatoan:move scr scr-y scr-x)
+                      (setf (croatoan:color-pair scr) cur-color
+                            (croatoan:attributes scr) cur-attr)
                       (format scr "~A" cur-glyph))))
   
   (croatoan:move scr 24 0)
@@ -101,3 +113,13 @@
   (let* ((rep (get-representation id rep-type-group))
          (glyph (rep-glyph rep)))
     glyph))
+
+(defun get-color (id rep-type-group)
+  (let* ((rep (get-representation id rep-type-group))
+         (color (rep-color rep)))
+    color))
+
+(defun get-attr (id rep-type-group)
+  (let* ((rep (get-representation id rep-type-group))
+         (attr (rep-attr rep)))
+    attr))
