@@ -6,7 +6,7 @@
   :license  "GPLv3"
   :version "0.0.1"
   :serial t
-  :depends-on (#:rshell.client.api)
+  :depends-on (#:rshell.client.api #:rshell.common)
   :components ((:file "package")
                (:file "terrain")
                (:file "level")

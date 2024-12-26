@@ -2,15 +2,25 @@
 
 (in-package #:rshell.client.curses)
 
+(defparameter *out* *standard-output*)
+
 (defun rshell.client.api:process-main-menu ()
   (let ((scr rshell.client.curses.basic::*scr*))
+    (refresh-screen-main-menu)
     (croatoan:clear scr)
     (croatoan:move scr 1 0)
     (format scr "Rogue Shell~%Main Menu~%n - New Game~%q - Quit")
     
     (croatoan:event-case (scr event)
       (#\n (return-from croatoan:event-case :new-game))
-      (#\q (return-from croatoan:event-case :quit-game)))))
+      (#\q (return-from croatoan:event-case :quit-game))
+      (:resize (check-and-warn-size-too-low #'refresh-screen-main-menu)))))
+
+(defun refresh-screen-main-menu ()
+  (let ((scr rshell.client.curses.basic::*scr*))
+    (croatoan:clear scr)
+    (croatoan:move scr 1 0)
+    (format scr "Rogue Shell~%Main Menu~%n - New Game~%q - Quit")))
 
 (defun rshell.client.api:process-game-loop ()
   (let* ((scr rshell.client.curses.basic::*scr*))
@@ -22,7 +32,8 @@
       (:down (return-from croatoan:event-case :player-move-down))
       (:left (return-from croatoan:event-case :player-move-left))
       (:right (return-from croatoan:event-case :player-move-right))
-      (#\q (return-from croatoan:event-case :quit-current-game)))))
+      (#\q (return-from croatoan:event-case :quit-current-game))
+      (:resize (check-and-warn-size-too-low #'rshell.client.api:refresh-screen)))))
 
 (defun rshell.client.api:process-game-quit ()
   (let ((scr rshell.client.curses.basic::*scr*))
@@ -123,3 +134,18 @@
   (let* ((rep (get-representation id rep-type-group))
          (attr (rep-attr rep)))
     attr))
+
+(defun check-and-warn-size-too-low (otherwise-refresh-func)
+  (let* ((scr rshell.client.curses.basic::*scr*)
+         (dimensions (croatoan:dimensions scr))
+         (w (second dimensions))
+         (h (first dimensions))
+         (msg "Terminal window size too low! Consider expanding at least to 80x25"))
+    (if (or (< w 80)
+              (< h 25))
+        (progn
+          (croatoan:clear scr)
+          (croatoan:move scr (truncate h 2) (- (truncate w 2) (truncate (length msg) 2)))
+          (format scr msg))
+        (progn
+          (funcall otherwise-refresh-func)))))
